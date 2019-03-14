@@ -6,18 +6,20 @@ import {
   StyleSheet,
   Text,
   Button,
+  TouchableOpacity,
+  SectionList,
   View
 } from "react-native";
 
 import Icon from "react-native-vector-icons/AntDesign";
 import { Header } from "react-native-elements";
-import DropdownMenu from "react-native-dropdown-menu";
-import { TextInput } from "react-native-gesture-handler";
 import { ListItem } from "react-native-elements";
 
 import template from "./../assets/data/template";
-import { Entypo } from "@expo/vector-icons";
 import { connectActionSheet } from "react-native-awesome-action-sheet";
+import { CheckBox } from 'react-native-elements'
+import { Input } from 'react-native-elements';
+import Autocomplete from 'react-native-autocomplete-input';
 
 const sports = [
   {
@@ -32,33 +34,15 @@ class GoalDetailScreen extends React.Component {
     this.state = {
       text: template.basic,
       options: "",
-      language: "",
-      selectedIndex: 0,
-      numbers: [
-        {
-          label: "1",
-          value: 1,
-          color: "orange"
-        },
-        {
-          label: "2",
-          value: 2,
-          color: "green"
-        }
-      ],
-      favSport0: undefined,
-      favSport1: undefined,
-      favSport2: undefined,
-      favSport3: undefined,
-      favSport4: "baseball",
-      favNumber: undefined
-    };
-    this.inputRefs = {
-      firstTextInput: null,
-      favSport0: null,
-      favSport1: null,
-      lastTextInput: null
-    };
+      phone: "",
+      checked: false,
+      query: "",
+      data: [
+        { title: template.basic, data: [{ section: 0, text: "" }] },
+        { title: 'To Do:', data: [{ section: 1, text: "" }] },
+      ]
+    }
+
   }
   static navigationOptions = {
     header: null
@@ -95,14 +79,28 @@ class GoalDetailScreen extends React.Component {
   };
 
   render() {
-    const buttons = [];
-    const { selectedIndex } = this.state;
-    const placeholder = {
-      label: "Select a sport...",
-      value: null,
-      color: "#9EA0A4"
-    };
-    var data = [["Last Content", "Basic Content"]];
+    const data = [];
+    // const itemEl = <View style={{ flexDirection: "row" }}>
+    //   <CheckBox
+    //     // style={{ width: 20, height: 20 }}
+    //     checked={this.state.checked}
+    //     onPress={e => {
+    //       console.log(e);
+    //     }}
+    //   />
+    //   <Autocomplete
+    //     data={data}
+    //     defaultValue={this.state.query}
+    //     onChangeText={text => this.setState({ query: text })}
+    //     containerStyle={{ width: "80%" }}
+    //     renderItem={itemX => (
+    //       <TouchableOpacity onPress={() => this.setState({ query: item })}>
+    //         <Text>{item}</Text>
+    //       </TouchableOpacity>
+    //     )}
+    //   />
+    // </View>
+
     return (
       <View style={styles.container}>
         <Header
@@ -111,73 +109,65 @@ class GoalDetailScreen extends React.Component {
           centerComponent={{ text: "MY TITLE", style: { color: "#fff" } }}
           rightComponent={{ icon: "home", color: "#fff" }}
         />
-        <View
-          style={{
-            height: 50
-          }}
-        >
-          <View style={{ width: 150 }}>
-            {/* <DropdownMenu
-              bgColor={"yellow"}
-              tintColor={"#666666"}
-              activityTintColor={"green"}
-              titleStyle={{ fontSize: 16 }}
-              handler={(selection, row) => {
-                this.setState({ options: data[selection][row] });
-                if (data[selection][row] == "Basic Content") {
-                  this.setState({ text: template.basic });
-                } else {
-                  this.setState({ text: template.basic });
-                }
-              }}
-              data={data}
-            /> */}
-            {/* <Button
-              onPress={e => {
-                const options = ["Delete", "Save", "Cancel"];
-                const destructiveButtonIndex = 0;
-                const cancelButtonIndex = 2;
-
-                this.props.showActionSheetWithOptions(
-                  {
-                    options,
-                    cancelButtonIndex,
-                    destructiveButtonIndex
-                  },
-                  buttonIndex => {
-                    // Do something here depending on the button index selected
-                  }
-                );
-              }}
-              title="Learn More"
-              color="#841584"
-              accessibilityLabel="Learn more about this purple button"
-            /> */}
-            <Entypo.Button
-              style={{ paddingHorizontal: 20 }}
-              name="code"
-              backgroundColor="#3e3e3e"
-              onPress={this._onOpenActionSheet}
-            >
-              <Text style={{ fontSize: 15, color: "#fff" }}>. . .</Text>
-            </Entypo.Button>
-          </View>
-        </View>
-
         <View style={{ padding: 10 }}>
-          <TextInput
-            style={{
-              height: 400,
-              padding: 10,
-              fontSize: 20
-            }}
-            multiline={true}
-            placeholder="Description"
-            onChangeText={text => {
-              this.setState({ text });
-              console.log(text);
-            }}
-            value={this.state.text}
+          <SectionList
+            renderItem={({ item, index, section }) => <View style={{ flexDirection: "row" }}>
+              <CheckBox
+                checkedIcon={<Icon
+                  name='check'
+                  size={30}
+                  type='font-awesome'
+                  color='#4CAF50'
+                />
+                }
+                uncheckedIcon={< Icon
+                  name='check'
+                  size={30}
+                  type='font-awesome'
+                  color='#E0E0E0'
+                />}
+                checked={this.state.checked}
+                onPress={() => this.setState({ checked: !this.state.checked })}
+              />
+              <Autocomplete
+                data={data}
+                defaultValue={item.text}
+                onChangeText={text => {
+                  if (this.state.data[item.section].data.length - 1 == index) {
+                    this.state.data[item.section].data.push({ section: item.section, text: "" })
+                    this.setState({ data: this.state.data })
+                  }
+                }}
+                containerStyle={{ width: "70%" }}
+                inputContainerStyle={{ borderLeftWidth: 0, borderTopWidth: 0, borderRightWidth: 0 }}
+                renderItem={itemX => (
+                  <TouchableOpacity onPress={() => this.setState({ query: item })}>
+                    <Text>{item}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+              <Icon
+                name='close'
+                size={20}
+                type='material'
+                color='#FF3D00'
+                onPress={e => {
+                  console.log("=");
+                  // console.log(index);
+                  // console.log(item);
+                  this.state.data[item.section].data.splice(index, 1);
+                  console.log(this.state.data[item.section].data);
+
+                  this.setState({ data: this.state.data });
+                  // splice(index, 1);
+                }}
+              />
+            </View>}
+            renderSectionHeader={({ section: { title } }) => (
+              <Text style={{ fontWeight: 'bold' }}>{title}</Text>
+            )}
+            sections={this.state.data}
+            keyExtractor={(item, index) => item + index}
           />
         </View>
       </View>
@@ -193,25 +183,4 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff"
   }
 });
-const pickerSelectStyles = StyleSheet.create({
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 4,
-    color: "black",
-    paddingRight: 30 // to ensure the text is never behind the icon
-  },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 0.5,
-    // borderColor: "eggplant",
-    borderRadius: 8,
-    color: "black",
-    paddingRight: 30 // to ensure the text is never behind the icon
-  }
-});
+
