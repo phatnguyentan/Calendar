@@ -15,7 +15,9 @@ import { MonoText } from "../components/StyledText";
 import CalendarPicker from "react-native-calendar-picker";
 import Icon from "react-native-vector-icons/AntDesign";
 import { FloatingAction } from "react-native-floating-action";
-import { Header } from "react-native-elements";
+// import { Header } from "react-native-elements";
+import { FlatList } from "react-native-gesture-handler";
+import data from "../assets/data/file.json"
 
 const actions = [
   {
@@ -27,11 +29,12 @@ const actions = [
 ];
 
 export default class HomeScreen extends React.Component {
-  // constructor() {
-  //   this.state = {
-  //     language: ""
-  //   };
-  // }
+  constructor(prop) {
+    super(prop);
+    this.state = {
+      language: ""
+    };
+  }
   static navigationOptions = {
     header: null
   };
@@ -42,39 +45,31 @@ export default class HomeScreen extends React.Component {
 
   render() {
     const { navigate } = this.props.navigation;
+    const { checked } = this.state;
     return (
       <View style={styles.container}>
-        <Header
+        {/* <Header
           placement="left"
           leftComponent={{ icon: "menu", color: "#fff" }}
           centerComponent={{ text: "MY TITLE", style: { color: "#fff" } }}
           rightComponent={{ icon: "home", color: "#fff" }}
-        />
+        /> */}
         <CalendarPicker onDateChange={this.onDateChange} />
-        {/* <Button icon={<Icon name="pluscircle" size={15} />} iconRight /> */}
         <View style={{ flex: 1, flexDirection: "column" }}>
           <View
             style={{ width: 50, height: 50, backgroundColor: "powderblue" }}
           />
           <View style={{ width: 50, height: 50, backgroundColor: "skyblue" }} />
-          <View
-            style={{
-              height: 50,
-              backgroundColor: "steelblue",
-              flexGrow: 1,
-              flex: 1,
-              flexDirection: "column-reverse",
-              alignItems: "flex-end"
+          <FlatList
+            data={data}
+            renderItem={({ item }) => <Text>{item.title}</Text>}
+          />
+          <FloatingAction
+            actions={actions}
+            onPressItem={name => {
+              navigate("Detail", { name: "Jane" });
             }}
-          >
-            <FloatingAction
-              actions={actions}
-              onPressItem={name => {
-                console.log(`selected button: ${name}`);
-                navigate("Detail", { name: "Jane" });
-              }}
-            />
-          </View>
+          />
         </View>
       </View>
     );

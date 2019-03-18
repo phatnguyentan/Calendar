@@ -6,14 +6,14 @@ import {
   KeyboardAvoidingView,
   StyleSheet,
   Text,
-  TextInput,
+  // TextInput,
   TouchableOpacity,
   SectionList,
   View
 } from "react-native";
 
 import Icon from "react-native-vector-icons/AntDesign";
-import { Header } from "react-native-elements";
+// import { Header } from "react-native-elements";
 import { ListItem, Button } from "react-native-elements";
 
 import template from "./../assets/data/template";
@@ -21,20 +21,22 @@ import { connectActionSheet } from "react-native-awesome-action-sheet";
 import { CheckBox } from 'react-native-elements'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Theme from "../assets/theme";
+import Test from "../assets/test";
 import CONSTANTS from "../constants";
+import { List, TextInput, Headline, Appbar } from 'react-native-paper';
 
 class GoalDetailScreen extends React.Component {
   constructor(prop) {
     super(prop);
     this.state = {
       text: template.basic,
+      title: template.basic,
       options: "",
       phone: "",
       checked: false,
       query: "",
       data: [
-        { title: template.basic, data: [{ section: 0, text: "" }] },
-        { title: 'To Do:', data: [{ section: 1, text: "" }] },
+        { title: 'To Do:', data: [{ section: 0, text: "" }] },
       ]
     }
   }
@@ -84,13 +86,24 @@ class GoalDetailScreen extends React.Component {
     return (
       <KeyboardAvoidingView style={styles.container}>
         <KeyboardAwareScrollView behavior="padding">
-          <Header
-            placement="left"
-            leftComponent={{ icon: "menu", color: "#fff" }}
-            centerComponent={{ text: "MY TITLE", style: { color: "#fff" } }}
-            rightComponent={{ icon: "home", color: "#fff" }}
-          />
+          <Appbar.Header>
+            <Appbar.BackAction
+              onPress={this._goBack}
+            />
+            <Appbar.Content
+              title="Title"
+              subtitle="Subtitle"
+            />
+            <Appbar.Action icon="search" onPress={this._onSearch} />
+            <Appbar.Action icon="more-vert" onPress={this._onMore} />
+          </Appbar.Header>
           <View style={{ flex: 1, padding: 10, justifyContent: "space-between", height: "100%" }}>
+            <TextInput
+              label='Title'
+              value={this.state.title}
+              onChangeText={title => this.setState({ title })}
+            />
+            <Headline>Todo List:</Headline>
             <SectionList
               renderItem={({ item, index, section }) => <View style={{ flexDirection: "row" }}>
                 <CheckBox
@@ -111,7 +124,6 @@ class GoalDetailScreen extends React.Component {
                   onPress={() => this.setState({ checked: !this.state.checked })}
                 />
                 <TextInput
-                  style={{ borderColor: Theme.COLORS.INPUT, width: "70%", borderRadius: 10, height: Theme.SIZES.INPUT_HEIGHT, borderWidth: Theme.SIZES.INPUT_BORDER_WIDTH }}
                   onChangeText={(text) => {
                     if (this.state.data[item.section].data.length - 1 == index) {
                       this.state.data[item.section].data.push({ section: item.section, text: "" });
@@ -133,7 +145,6 @@ class GoalDetailScreen extends React.Component {
                   }
                   type="clear"
                   onPress={e => {
-                    // console.log(this.state.data[item.section].data[index].text);
                     if (this.state.data[item.section].data[index].text && this.state.data[item.section].data[index].text !== "") {
                       this.state.data[item.section].data.splice(index, 1);
                     } else {
@@ -151,18 +162,19 @@ class GoalDetailScreen extends React.Component {
             />
           </View>
         </KeyboardAwareScrollView>
-        <View style={{ justifyContent: "flex-end", padding: 20 }}>
+        <View>
           {
             list.map((l, i) => (
-              <ListItem
+              <List.Item
                 key={i}
-                leftIcon={< Icon
+                style={Test.STYLES.listItem}
+                title={l.subtitle}
+                left={props => < Icon
                   name='star'
                   size={20}
                   type='font-awesome'
                   color='#CDDC39'
                 />}
-                subtitle={l.subtitle}
               />
             ))
           }
