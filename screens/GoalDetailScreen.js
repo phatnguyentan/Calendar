@@ -6,37 +6,34 @@ import {
   KeyboardAvoidingView,
   StyleSheet,
   Text,
-  // TextInput,
   TouchableOpacity,
-  SectionList,
+  FlatList,
   View
 } from "react-native";
 
 import Icon from "react-native-vector-icons/AntDesign";
-// import { Header } from "react-native-elements";
-import { ListItem, Button } from "react-native-elements";
+// import { ListItem, Button } from "react-native-elements";
 
 import template from "./../assets/data/template";
-import { connectActionSheet } from "react-native-awesome-action-sheet";
-import { CheckBox } from 'react-native-elements'
+// import { CheckBox } from 'react-native-elements'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Theme from "../assets/theme";
 import Test from "../assets/test";
 import CONSTANTS from "../constants";
-import { List, TextInput, Headline, Appbar } from 'react-native-paper';
+import { List, TextInput, Headline, Appbar, Button } from 'react-native-paper';
+
 
 class GoalDetailScreen extends React.Component {
   constructor(prop) {
     super(prop);
     this.state = {
       text: template.basic,
-      title: template.basic,
+      title: "",
       options: "",
       phone: "",
-      checked: false,
       query: "",
       data: [
-        { title: 'To Do:', data: [{ section: 0, text: "" }] },
+        { text: "", checked: true }
       ]
     }
   }
@@ -86,7 +83,7 @@ class GoalDetailScreen extends React.Component {
     return (
       <KeyboardAvoidingView style={styles.container}>
         <KeyboardAwareScrollView behavior="padding">
-          <Appbar.Header>
+          <Appbar.Header style={Theme.STYLES.mainHeader}>
             <Appbar.BackAction
               onPress={this._goBack}
             />
@@ -100,65 +97,60 @@ class GoalDetailScreen extends React.Component {
           <View style={{ flex: 1, padding: 10, justifyContent: "space-between", height: "100%" }}>
             <TextInput
               label='Title'
+              mode="outlined"
+              theme={{ colors: { primary: "black" } }}
               value={this.state.title}
               onChangeText={title => this.setState({ title })}
             />
-            <Headline>Todo List:</Headline>
-            <SectionList
-              renderItem={({ item, index, section }) => <View style={{ flexDirection: "row" }}>
-                <CheckBox
-                  checkedIcon={<Icon
-                    name='check'
-                    size={Theme.SIZES.CHECKBOX_WIDTH}
-                    type='font-awesome'
-                    color={Theme.COLORS.SUCCESS}
-                  />
-                  }
-                  uncheckedIcon={< Icon
-                    name='check'
-                    size={Theme.SIZES.CHECKBOX_WIDTH}
-                    type='font-awesome'
-                    color={Theme.COLORS.MUTED}
-                  />}
-                  checked={this.state.checked}
-                  onPress={() => this.setState({ checked: !this.state.checked })}
-                />
-                <TextInput
-                  onChangeText={(text) => {
-                    if (this.state.data[item.section].data.length - 1 == index) {
-                      this.state.data[item.section].data.push({ section: item.section, text: "" });
-                    }
-                    this.state.data[item.section].data[index].text = text;
-                    this.setState({ data: this.state.data });
-                  }}
-                  value={this.state.data[item.section].data[index].text}
-                  placeholder={CONSTANTS.TEXTS.INPUT_DESCRIPTION}
-                ></TextInput>
-                <Button
-                  icon={
-                    <Icon
-                      name='close'
-                      size={Theme.SIZES.CHECKBOX_WIDTH}
-                      type='material'
-                      color={Theme.COLORS.ERROR}
-                    />
-                  }
-                  type="clear"
-                  onPress={e => {
-                    if (this.state.data[item.section].data[index].text && this.state.data[item.section].data[index].text !== "") {
-                      this.state.data[item.section].data.splice(index, 1);
-                    } else {
-                      this.state.data[item.section].data[index].text = "";
-                    }
-                    this.setState({ data: this.state.data });
-                  }}
-                />
-              </View>}
-              renderSectionHeader={({ section: { title } }) => (
-                <Text style={{ fontWeight: 'bold' }}>{title}</Text>
-              )}
-              sections={this.state.data}
+            <FlatList
+              data={this.state.data}
               keyExtractor={(item, index) => item + index}
+              renderItem={({ item, index }) =>
+                <View key={index} style={{ flex: 1, flexDirection: "row", alignItems: 'center', justifyContent: 'center', }}>
+                  <Icon
+                    style={{ padding: 15 }}
+                    name='check'
+                    size={Theme.SIZES.CHECKBOX_WIDTH}
+                    type='font-awesome'
+                    color={this.state.data[index].checked ? Theme.COLORS.SUCCESS : Theme.COLORS.MUTED}
+                    onPress={() => {
+                      this.state.data[index].checked = !this.state.data[index].checked;
+                      this.state.data = [...this.state.data];
+                      this.setState({ data: this.state.data });
+                    }}
+                  />
+                  <TextInput
+                    style={{ flex: 3 }}
+                    mode="outlined"
+                    theme={{ colors: { primary: "black" } }}
+                    onChangeText={(text) => {
+                      if (this.state.data.length - 1 == index) {
+                        this.state.data.push({ text: "" });
+                      }
+                      this.state.data[index].text = text;
+                      this.state.data = [...this.state.data];
+                      this.setState({ data: this.state.data });
+                    }}
+                    value={this.state.data[index].text}
+                    label={CONSTANTS.TEXTS.INPUT_DESCRIPTION}
+                  ></TextInput>
+                  <Icon
+                    style={{ padding: 15 }}
+                    name='close'
+                    size={Theme.SIZES.CHECKBOX_WIDTH}
+                    type='font-awesome'
+                    color={Theme.COLORS.ERROR}
+                    onPress={() => {
+                      if (this.state.data[index].text && this.state.data[index].text !== "") {
+                        this.state.data.splice(index, 1);
+                      } else {
+                        this.state.data[index].text = "";
+                      }
+                      this.state.data = [...this.state.data];
+                      this.setState({ data: this.state.data });
+                    }}
+                  />
+                </View>}
             />
           </View>
         </KeyboardAwareScrollView>
@@ -167,13 +159,11 @@ class GoalDetailScreen extends React.Component {
             list.map((l, i) => (
               <List.Item
                 key={i}
-                style={Test.STYLES.listItem}
                 title={l.subtitle}
                 left={props => < Icon
                   name='star'
                   size={20}
                   type='font-awesome'
-                  color='#CDDC39'
                 />}
               />
             ))
@@ -185,7 +175,7 @@ class GoalDetailScreen extends React.Component {
   }
 }
 
-export default connectActionSheet(GoalDetailScreen);
+export default GoalDetailScreen;
 
 const styles = StyleSheet.create({
   container: {

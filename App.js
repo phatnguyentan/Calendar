@@ -2,9 +2,21 @@ import React from "react";
 import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { AppLoading, Asset, Font, Icon } from "expo";
 import AppNavigator from "./navigation/AppNavigator";
-import { ActionSheetProvider } from "react-native-awesome-action-sheet";
-import { Provider as PaperProvider } from 'react-native-paper';
+import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import GoalDetailScreen from "./screens/GoalDetailScreen";
+import Theme from "./assets/theme";
+
+const theme = {
+  ...DefaultTheme,
+  roundness: 5,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: Theme.COLORS.PRIMARY,
+    accent: Theme.COLORS.ACCENT,
+    background: "white",
+    surface: "red",
+  }
+};
 
 export default class App extends React.Component {
   state = {
@@ -22,14 +34,12 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <PaperProvider>
-          <ActionSheetProvider>
-            <View style={styles.container}>
-              {Platform.OS === "ios" && <StatusBar barStyle="default" />}
-              <AppNavigator />
-              {/* <GoalDetailScreen /> */}
-            </View>
-          </ActionSheetProvider>
+        <PaperProvider theme={theme}>
+          <View style={styles.container}>
+            {Platform.OS === "ios" && <StatusBar barStyle="default" />}
+            <AppNavigator />
+            {/* <GoalDetailScreen /> */}
+          </View>
         </PaperProvider>
       );
     }

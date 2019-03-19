@@ -1,12 +1,7 @@
 import React from "react";
 import {
-  Image,
-  Platform,
-  ScrollView,
+  AsyncStorage,
   StyleSheet,
-  Picker,
-  Text,
-  TouchableOpacity,
   View
 } from "react-native";
 import { WebBrowser } from "expo";
@@ -15,9 +10,10 @@ import { MonoText } from "../components/StyledText";
 import CalendarPicker from "react-native-calendar-picker";
 import Icon from "react-native-vector-icons/AntDesign";
 import { FloatingAction } from "react-native-floating-action";
-// import { Header } from "react-native-elements";
-import { FlatList } from "react-native-gesture-handler";
+import { List, TextInput, Headline, Appbar } from 'react-native-paper';
 import data from "../assets/data/file.json"
+import Theme from "../assets/theme";
+import { withTheme } from 'react-native-paper';
 
 const actions = [
   {
@@ -28,7 +24,7 @@ const actions = [
   }
 ];
 
-export default class HomeScreen extends React.Component {
+class HomeScreen extends React.Component {
   constructor(prop) {
     super(prop);
     this.state = {
@@ -43,27 +39,72 @@ export default class HomeScreen extends React.Component {
     console.log(e);
   }
 
+  _onSearch() {
+    try {
+      AsyncStorage.setItem('@MySuperStore:key', 'I like to save it.').then(res => {
+        console.log(res);
+      })
+    } catch (error) {
+      // Error saving data
+    }
+  }
+
+  _onMore() {
+    try {
+      AsyncStorage.getItem('@MySuperStore:key').then(res => {
+        console.log(res);
+
+      });
+    } catch (error) {
+      // Error saving data
+    }
+  }
+
   render() {
     const { navigate } = this.props.navigation;
-    const { checked } = this.state;
+    const theme = this.props.theme;
+    const list = [
+      {
+        subtitle: 'Todo test 1'
+      },
+      {
+        subtitle: 'Todo test 2'
+      }
+    ]
     return (
       <View style={styles.container}>
-        {/* <Header
-          placement="left"
-          leftComponent={{ icon: "menu", color: "#fff" }}
-          centerComponent={{ text: "MY TITLE", style: { color: "#fff" } }}
-          rightComponent={{ icon: "home", color: "#fff" }}
-        /> */}
+        <Appbar.Header>
+          <Appbar.BackAction
+            onPress={e => {
+              // this.props.theme
+              console.log(this.props.theme);
+            }}
+          />
+          <Appbar.Content
+            title="Title"
+            subtitle="Subtitle"
+          />
+          <Appbar.Action icon="search" onPress={this._onSearch} />
+          <Appbar.Action icon="more-vert" onPress={this._onMore} />
+        </Appbar.Header>
         <CalendarPicker onDateChange={this.onDateChange} />
-        <View style={{ flex: 1, flexDirection: "column" }}>
-          <View
-            style={{ width: 50, height: 50, backgroundColor: "powderblue" }}
-          />
-          <View style={{ width: 50, height: 50, backgroundColor: "skyblue" }} />
-          <FlatList
-            data={data}
-            renderItem={({ item }) => <Text>{item.title}</Text>}
-          />
+        <View style={{ flex: 1 }}>
+          {
+            list.map((l, i) => (
+              <List.Item
+                key={i}
+                // style={{ backgroundColor: Theme.COLORS.PRIMARY }}
+                theme={theme}
+                title={l.subtitle}
+                left={props => < Icon
+                  name='star'
+                  size={20}
+                  type='font-awesome'
+                  color='#CDDC39'
+                />}
+              />
+            ))
+          }
           <FloatingAction
             actions={actions}
             onPressItem={name => {
@@ -80,109 +121,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff"
-  },
-  developmentModeText: {
-    marginBottom: 20,
-    color: "rgba(0,0,0,0.4)",
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: "center"
-  },
-  contentContainer: {
-    paddingTop: 30
-  },
-  welcomeContainer: {
-    alignItems: "center",
-    marginTop: 10,
-    marginBottom: 20
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: "contain",
-    marginTop: 3,
-    marginLeft: -10
-  },
-  getStartedContainer: {
-    alignItems: "center",
-    marginHorizontal: 50
-  },
-  homeScreenFilename: {
-    marginVertical: 7
-  },
-  codeHighlightText: {
-    color: "rgba(96,100,109, 0.8)"
-  },
-  codeHighlightContainer: {
-    backgroundColor: "rgba(0,0,0,0.05)",
-    borderRadius: 3,
-    paddingHorizontal: 4
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: "rgba(96,100,109, 1)",
-    lineHeight: 24,
-    textAlign: "center"
-  },
-  tabBarInfoContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: "black",
-        shadowOffset: { height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3
-      },
-      android: {
-        elevation: 20
-      }
-    }),
-    alignItems: "center",
-    backgroundColor: "#fbfbfb",
-    paddingVertical: 20
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: "rgba(96,100,109, 1)",
-    textAlign: "center"
-  },
-  navigationFilename: {
-    marginTop: 5
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: "center"
-  },
-  helpLink: {
-    paddingVertical: 15
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: "#2e78b7"
   }
 });
-const pickerSelectStyles = StyleSheet.create({
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    // borderColor: "gray",
-    borderRadius: 4,
-    color: "black",
-    paddingRight: 30 // to ensure the text is never behind the icon
-  },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 0.5,
-    // borderColor: "eggplant",
-    borderRadius: 8,
-    color: "black",
-    paddingRight: 30 // to ensure the text is never behind the icon
-  }
-});
+export default withTheme(HomeScreen);

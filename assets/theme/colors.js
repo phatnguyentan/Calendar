@@ -9,8 +9,9 @@ export const SOCIAL = {
 export const THEME = {
   // THEME: '#B23AFC',
   // PRIMARY: '#B23AFC',
-  THEME: '#FFEB3B',
-  PRIMARY: '#F57F17',
+  PRIMARY: '#FDD835',
+  ACCENT: '#F57F17',
+  BACKGROUND: '#FFEB3B',
   INFO: '#1232FF',
   ERROR: '#FE2472',
   WARNING: '#FF9C09',
