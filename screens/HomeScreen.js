@@ -14,6 +14,10 @@ import { List, TextInput, Headline, Appbar } from 'react-native-paper';
 import data from "../assets/data/file.json"
 import Theme from "../assets/theme";
 import { withTheme } from 'react-native-paper';
+import CONSTANTS from "../constants";
+import { SQLite } from 'expo';
+
+const db = SQLite.openDatabase(CONSTANTS.CONFIGS.DB);
 
 const actions = [
   {
@@ -28,7 +32,8 @@ class HomeScreen extends React.Component {
   constructor(prop) {
     super(prop);
     this.state = {
-      language: ""
+      language: "",
+      list: []
     };
   }
   static navigationOptions = {
@@ -40,13 +45,16 @@ class HomeScreen extends React.Component {
   }
 
   _onSearch() {
-    try {
-      AsyncStorage.setItem('@MySuperStore:key', 'I like to save it.').then(res => {
-        console.log(res);
-      })
-    } catch (error) {
-      // Error saving data
-    }
+    db.transaction(
+      tx => {
+        tx.executeSql('select * from files', [], (_, { rows: { _array } }) => {
+          this.setState({ list: _array });
+          console.log(this.state.list)
+        }
+        );
+      }
+      // this.update  
+    );
   }
 
   _onMore() {
@@ -63,39 +71,27 @@ class HomeScreen extends React.Component {
   render() {
     const { navigate } = this.props.navigation;
     const theme = this.props.theme;
-    const list = [
-      {
-        subtitle: 'Todo test 1'
-      },
-      {
-        subtitle: 'Todo test 2'
-      }
-    ]
     return (
       <View style={styles.container}>
         <Appbar.Header>
-          <Appbar.BackAction
-            onPress={e => {
-              // this.props.theme
-              console.log(this.props.theme);
-            }}
-          />
           <Appbar.Content
-            title="Title"
+            title="Calendar"
             subtitle="Subtitle"
           />
-          <Appbar.Action icon="search" onPress={this._onSearch} />
-          <Appbar.Action icon="more-vert" onPress={this._onMore} />
+          {/* <Appbar.Action icon="search" onPress={this._onSearch.bind(this)} /> */}
+          {/* <Appbar.Action icon="more-vert" onPress={this._onMore} /> */}
         </Appbar.Header>
         <CalendarPicker onDateChange={this.onDateChange} />
         <View style={{ flex: 1 }}>
           {
-            list.map((l, i) => (
+            this.state.list.map((l, i) => (
               <List.Item
                 key={i}
-                // style={{ backgroundColor: Theme.COLORS.PRIMARY }}
                 theme={theme}
-                title={l.subtitle}
+                title={l.title}
+                onPress={e => {
+                  navigate("Detail", { file: l });
+                }}
                 left={props => < Icon
                   name='star'
                   size={20}

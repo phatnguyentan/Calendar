@@ -37,6 +37,7 @@ class GoalDetailScreen extends React.Component {
       ]
     }
   }
+
   static navigationOptions = {
     header: null
   };
@@ -70,8 +71,11 @@ class GoalDetailScreen extends React.Component {
     );
   };
 
+  _goBack() {
+    navigate("Home");
+  }
+
   render() {
-    const data = [];
     const list = [
       {
         subtitle: 'Eat'
@@ -80,6 +84,10 @@ class GoalDetailScreen extends React.Component {
         subtitle: 'Drink'
       }
     ]
+    const { navigation } = this.props;
+    const file = navigation.getParam('file', {});
+    let data = JSON.parse(file.content);
+    this.setState({ data })
     return (
       <KeyboardAvoidingView style={styles.container}>
         <KeyboardAwareScrollView behavior="padding">
@@ -88,11 +96,11 @@ class GoalDetailScreen extends React.Component {
               onPress={this._goBack}
             />
             <Appbar.Content
-              title="Title"
+              title="Calendar"
               subtitle="Subtitle"
             />
-            <Appbar.Action icon="search" onPress={this._onSearch} />
-            <Appbar.Action icon="more-vert" onPress={this._onMore} />
+            {/* <Appbar.Action icon="search" onPress={this._onSearch} /> */}
+            {/* <Appbar.Action icon="more-vert" onPress={this._onMore} /> */}
           </Appbar.Header>
           <View style={{ flex: 1, padding: 10, justifyContent: "space-between", height: "100%" }}>
             <TextInput

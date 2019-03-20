@@ -5,6 +5,10 @@ import AppNavigator from "./navigation/AppNavigator";
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import GoalDetailScreen from "./screens/GoalDetailScreen";
 import Theme from "./assets/theme";
+import { SQLite } from 'expo';
+import CONSTANTS from "./constants";
+
+const db = SQLite.openDatabase(CONSTANTS.CONFIGS.DB);
 
 const theme = {
   ...DefaultTheme,
@@ -22,6 +26,20 @@ export default class App extends React.Component {
   state = {
     isLoadingComplete: false
   };
+
+  componentDidMount() {
+    db.transaction(tx => {
+      tx.executeSql(
+        'drop table if exists files'
+      );
+      tx.executeSql(
+        'create table if not exists files (id integer primary key not null, title int, content text, type string, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);'
+      );
+      tx.executeSql(
+        'INSERT INTO files (title, type, content) VALUES ("Test Title", "todo", "[{\"checked\": true, \"text\": \"show some thing\"}]");'
+      );
+    });
+  }
 
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
