@@ -68,6 +68,19 @@ class HomeScreen extends React.Component {
     }
   }
 
+  componentDidMount() {
+    db.transaction(
+      tx => {
+        tx.executeSql('select * from files', [], (_, { rows: { _array } }) => {
+          this.setState({ list: _array });
+          console.log(this.state.list)
+        }
+        );
+      }
+    );
+  }
+
+
   render() {
     const { navigate } = this.props.navigation;
     const theme = this.props.theme;

@@ -1,7 +1,7 @@
 import STYLES from './styles';
 
-const Test = {
+const Theme = {
   STYLES: STYLES,
 };
 
-export default Test;
+export default Theme;

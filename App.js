@@ -28,15 +28,28 @@ export default class App extends React.Component {
   };
 
   componentDidMount() {
+    // db.transaction(tx => {
+    //   tx.executeSql(
+    //     'drop table if exists files'
+    //   );
+    //   tx.executeSql(
+    //     'create table if not exists files (id integer primary key not null, title int, content text, type string, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);'
+    //   );
+    //   tx.executeSql(
+    //     'INSERT INTO files (title, type, content) VALUES ("Test Title", "todo", "[{\"checked\": true, \"text\": \"show some thing\"}]");'
+    //   );
+    // });
     db.transaction(tx => {
       tx.executeSql(
-        'drop table if exists files'
+        'drop table files'
       );
       tx.executeSql(
-        'create table if not exists files (id integer primary key not null, title int, content text, type string, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);'
+        'create table if not exists files (id integer primary key not null, title string, content text, type string, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);'
       );
+      let str = [{ checked: true, text: "show some thing" }];
+
       tx.executeSql(
-        'INSERT INTO files (title, type, content) VALUES ("Test Title", "todo", "[{\"checked\": true, \"text\": \"show some thing\"}]");'
+        'INSERT INTO files (title, type, content) VALUES ("Test Title", "todo", "' + escape(JSON.stringify(str)) + '");'
       );
     });
   }

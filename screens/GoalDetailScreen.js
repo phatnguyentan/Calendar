@@ -18,9 +18,9 @@ import template from "./../assets/data/template";
 // import { CheckBox } from 'react-native-elements'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Theme from "../assets/theme";
-import Test from "../assets/test";
 import CONSTANTS from "../constants";
 import { List, TextInput, Headline, Appbar, Button } from 'react-native-paper';
+import { decode } from "iconv-lite";
 
 
 class GoalDetailScreen extends React.Component {
@@ -36,6 +36,13 @@ class GoalDetailScreen extends React.Component {
         { text: "", checked: true }
       ]
     }
+  }
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    const file = navigation.getParam('file', {});
+    let data = JSON.parse(unescape(file.content));
+    this.setState({ data });
   }
 
   static navigationOptions = {
@@ -72,6 +79,7 @@ class GoalDetailScreen extends React.Component {
   };
 
   _goBack() {
+    const { navigate } = this.props.navigation;
     navigate("Home");
   }
 
@@ -84,23 +92,17 @@ class GoalDetailScreen extends React.Component {
         subtitle: 'Drink'
       }
     ]
-    const { navigation } = this.props;
-    const file = navigation.getParam('file', {});
-    let data = JSON.parse(file.content);
-    this.setState({ data })
     return (
       <KeyboardAvoidingView style={styles.container}>
         <KeyboardAwareScrollView behavior="padding">
           <Appbar.Header style={Theme.STYLES.mainHeader}>
             <Appbar.BackAction
-              onPress={this._goBack}
+              onPress={this._goBack.bind(this)}
             />
             <Appbar.Content
               title="Calendar"
               subtitle="Subtitle"
             />
-            {/* <Appbar.Action icon="search" onPress={this._onSearch} /> */}
-            {/* <Appbar.Action icon="more-vert" onPress={this._onMore} /> */}
           </Appbar.Header>
           <View style={{ flex: 1, padding: 10, justifyContent: "space-between", height: "100%" }}>
             <TextInput
