@@ -21,9 +21,10 @@ import Theme from "../assets/theme";
 import CONSTANTS from "../constants";
 import { List, TextInput, Headline, Appbar, Button } from 'react-native-paper';
 import { decode } from "iconv-lite";
+import Todo from "../libs/models/todo.model";
 
 
-class GoalDetailScreen extends React.Component {
+class TodosScreen extends React.Component {
   constructor(prop) {
     super(prop);
     this.state = {
@@ -32,16 +33,15 @@ class GoalDetailScreen extends React.Component {
       options: "",
       phone: "",
       query: "",
-      data: [
-        { text: "", checked: true }
-      ]
+      metadata: {},
+      options: {},
+      data: new Todo()
     }
   }
 
   componentDidMount() {
     const { navigation } = this.props;
-    const file = navigation.getParam('file', {});
-    let data = JSON.parse(unescape(file.content));
+    const data = navigation.state.params;
     this.setState({ data });
   }
 
@@ -92,6 +92,7 @@ class GoalDetailScreen extends React.Component {
         subtitle: 'Drink'
       }
     ]
+    let data = this.state.data;
     return (
       <KeyboardAvoidingView style={styles.container}>
         <KeyboardAwareScrollView behavior="padding">
@@ -106,14 +107,14 @@ class GoalDetailScreen extends React.Component {
           </Appbar.Header>
           <View style={{ flex: 1, padding: 10, justifyContent: "space-between", height: "100%" }}>
             <TextInput
-              label='Title'
+              label="Title"
               mode="outlined"
               theme={{ colors: { primary: "black" } }}
-              value={this.state.title}
+              value={data.title}
               onChangeText={title => this.setState({ title })}
             />
             <FlatList
-              data={this.state.data}
+              data={data.content}
               keyExtractor={(item, index) => item + index}
               renderItem={({ item, index }) =>
                 <View key={index} style={{ flex: 1, flexDirection: "row", alignItems: 'center', justifyContent: 'center', }}>
@@ -122,11 +123,12 @@ class GoalDetailScreen extends React.Component {
                     name='check'
                     size={Theme.SIZES.CHECKBOX_WIDTH}
                     type='font-awesome'
-                    color={this.state.data[index].checked ? Theme.COLORS.SUCCESS : Theme.COLORS.MUTED}
+                    color={data.content[index].checked ? Theme.COLORS.SUCCESS : Theme.COLORS.MUTED}
                     onPress={() => {
-                      this.state.data[index].checked = !this.state.data[index].checked;
-                      this.state.data = [...this.state.data];
+                      data.content[index].checked = !data.content[index].checked;
+                      this.state.data.content = [...this.state.data.content];
                       this.setState({ data: this.state.data });
+
                     }}
                   />
                   <TextInput
@@ -134,14 +136,14 @@ class GoalDetailScreen extends React.Component {
                     mode="outlined"
                     theme={{ colors: { primary: "black" } }}
                     onChangeText={(text) => {
-                      if (this.state.data.length - 1 == index) {
-                        this.state.data.push({ text: "" });
+                      if (data.content.length - 1 == index) {
+                        data.createEmpty();
                       }
-                      this.state.data[index].text = text;
-                      this.state.data = [...this.state.data];
-                      this.setState({ data: this.state.data });
+                      data.content[index].text = text;
+                      this.state.data.content = [...data.content];
+                      this.setState({ data });
                     }}
-                    value={this.state.data[index].text}
+                    value={data.content[index].text}
                     label={CONSTANTS.TEXTS.INPUT_DESCRIPTION}
                   ></TextInput>
                   <Icon
@@ -151,20 +153,20 @@ class GoalDetailScreen extends React.Component {
                     type='font-awesome'
                     color={Theme.COLORS.ERROR}
                     onPress={() => {
-                      if (this.state.data[index].text && this.state.data[index].text !== "") {
-                        this.state.data.splice(index, 1);
+                      if (data.content[index].text && data.content[index].text !== "") {
+                        data.content.splice(index, 1);
                       } else {
-                        this.state.data[index].text = "";
+                        data.content[index].text = "";
                       }
-                      this.state.data = [...this.state.data];
-                      this.setState({ data: this.state.data });
+                      data.content = [...data.content];
+                      this.setState({ data });
                     }}
                   />
                 </View>}
             />
           </View>
         </KeyboardAwareScrollView>
-        <View>
+        <List.Section>
           {
             list.map((l, i) => (
               <List.Item
@@ -178,14 +180,14 @@ class GoalDetailScreen extends React.Component {
               />
             ))
           }
-        </View>
+        </List.Section>
       </KeyboardAvoidingView>
 
     );
   }
 }
 
-export default GoalDetailScreen;
+export default TodosScreen;
 
 const styles = StyleSheet.create({
   container: {

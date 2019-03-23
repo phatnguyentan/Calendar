@@ -6,23 +6,26 @@ import {
 } from "react-native";
 import { WebBrowser } from "expo";
 
-import { MonoText } from "../components/StyledText";
 import CalendarPicker from "react-native-calendar-picker";
-import Icon from "react-native-vector-icons/AntDesign";
+import Icon from "react-native-vector-icons/FontAwesome";
 import { FloatingAction } from "react-native-floating-action";
 import { List, TextInput, Headline, Appbar } from 'react-native-paper';
-import data from "../assets/data/file.json"
-import Theme from "../assets/theme";
 import { withTheme } from 'react-native-paper';
 import CONSTANTS from "../constants";
 import { SQLite } from 'expo';
+import Todo from "../libs/models/todo.model";
+import ItemsList from "../libs/models/items-list.model";
 
 const db = SQLite.openDatabase(CONSTANTS.CONFIGS.DB);
 
 const actions = [
   {
-    text: "Goal",
-    // icon: require("./images/ic_accessibility_white.png"),
+    text: "Todo List",
+    icon: < Icon
+      name='list'
+      size={20}
+      type='font-awesome'
+    />,
     name: "bt_accessibility",
     position: 1
   }
@@ -33,7 +36,7 @@ class HomeScreen extends React.Component {
     super(prop);
     this.state = {
       language: "",
-      list: []
+      itemsList: { items: [] }
     };
   }
   static navigationOptions = {
@@ -45,44 +48,44 @@ class HomeScreen extends React.Component {
   }
 
   _onSearch() {
-    db.transaction(
-      tx => {
-        tx.executeSql('select * from files', [], (_, { rows: { _array } }) => {
-          this.setState({ list: _array });
-          console.log(this.state.list)
-        }
-        );
-      }
-      // this.update  
-    );
+    // db.transaction(
+    //   tx => {
+    //     tx.executeSql('select * from files', [], (_, { rows: { _array } }) => {
+    //       this.setState({ itemsList: new ItemsList(_array) });
+    //       console.log(this.state.itemsList);
+    //     }
+    //     );
+    //   }
+    // );
   }
 
   _onMore() {
     try {
-      AsyncStorage.getItem('@MySuperStore:key').then(res => {
-        console.log(res);
+      // AsyncStorage.getItem('@MySuperStore:key').then(res => {
+      //   console.log(res);
 
-      });
+      // });
     } catch (error) {
       // Error saving data
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
     db.transaction(
       tx => {
         tx.executeSql('select * from files', [], (_, { rows: { _array } }) => {
-          this.setState({ list: _array });
-          console.log(this.state.list)
+          // console.log(_array);
+          // console.log(new ItemsList(_array));
+          // let newList = new ItemsList(_array)
+          this.setState({ itemsList: new ItemsList(_array) });
+          // console.log(this.state.itemsList);
         }
         );
       }
     );
   }
 
-
   render() {
-    const { navigate } = this.props.navigation;
     const theme = this.props.theme;
     return (
       <View style={styles.container}>
@@ -95,16 +98,14 @@ class HomeScreen extends React.Component {
           {/* <Appbar.Action icon="more-vert" onPress={this._onMore} /> */}
         </Appbar.Header>
         <CalendarPicker onDateChange={this.onDateChange} />
-        <View style={{ flex: 1 }}>
+        <List.Section style={{ flex: 1 }}>
           {
-            this.state.list.map((l, i) => (
+            this.state.itemsList.items.map((l, i) => (
               <List.Item
                 key={i}
                 theme={theme}
                 title={l.title}
-                onPress={e => {
-                  navigate("Detail", { file: l });
-                }}
+                onPress={e => { this.viewDetail(l) }}
                 left={props => < Icon
                   name='star'
                   size={20}
@@ -114,15 +115,36 @@ class HomeScreen extends React.Component {
               />
             ))
           }
-          <FloatingAction
-            actions={actions}
-            onPressItem={name => {
-              navigate("Detail", { name: "Jane" });
-            }}
-          />
-        </View>
+        </List.Section>
+        <FloatingAction
+          actions={actions}
+          onPressItem={name => { this.createNew(name) }}
+        />
       </View>
     );
+  }
+  componentDidMount() {
+
+  }
+
+  viewDetail(item) {
+    item = { ...item }
+    if (item.type == 'todo') {
+      item.content = JSON.parse(unescape(item.content));
+      let todo = new Todo();
+      todo.setData(item);
+      todo.setMetadata({ saved: true });
+      todo.createEmpty();
+      const { navigate } = this.props.navigation;
+      navigate("Todos", todo);
+    }
+  }
+
+  createNew(e) {
+    let todo = new Todo();
+    todo.setMetadata({ saved: false });
+    todo.createEmpty();
+    this.props.navigation.navigate("Todos", todo);
   }
 }
 

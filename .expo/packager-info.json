@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 10477,
-  "expoServerNgrokUrl": "https://4w-z7r.davidnguyen91.calendarreact.exp.direct",
-  "packagerNgrokUrl": "https://packager.4w-z7r.davidnguyen91.calendarreact.exp.direct",
-  "ngrokPid": 10528
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null
 }
