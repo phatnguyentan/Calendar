@@ -1,5 +1,3 @@
-export default class ItemsList {
-  constructor(items) {
-    this.items = items;
-  }
+export default class ItemsList extends Array {
+
 }

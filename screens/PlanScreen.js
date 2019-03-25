@@ -1,14 +1,10 @@
 import React from "react";
 import {
-  Image,
-  Platform,
-  ScrollView,
   KeyboardAvoidingView,
   StyleSheet,
-  Text,
-  TouchableOpacity,
-  FlatList,
-  View
+  DatePickerIOS,
+  View,
+  Platform
 } from "react-native";
 
 import Icon from "react-native-vector-icons/AntDesign";
@@ -18,13 +14,10 @@ import template from "./../assets/data/template";
 // import { CheckBox } from 'react-native-elements'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Theme from "../assets/theme";
-import CONSTANTS from "../constants";
-import { List, TextInput, Headline, Appbar, Button } from 'react-native-paper';
-import { decode } from "iconv-lite";
-import Todo from "../libs/models/todo.model";
+import { List, TextInput, Appbar } from 'react-native-paper';
+import Plan from "../libs/models/plan.model";
 
-
-class TodosScreen extends React.Component {
+export class PlanScreen extends React.Component {
   constructor(prop) {
     super(prop);
     this.state = {
@@ -35,7 +28,8 @@ class TodosScreen extends React.Component {
       query: "",
       metadata: {},
       options: {},
-      data: new Todo()
+      chosenDate: new Date(),
+      data: new Plan()
     }
   }
 
@@ -96,6 +90,15 @@ class TodosScreen extends React.Component {
         subtitle: 'Drink'
       }
     ]
+    let datePicker;
+    if (Platform.OS === "ios") {
+      datePicker = <DatePickerIOS
+        date={this.state.chosenDate}
+        onDateChange={this.setDate}
+      />
+    } else {
+
+    }
     let data = this.state.data;
     return (
       <KeyboardAvoidingView style={styles.container}>
@@ -118,57 +121,15 @@ class TodosScreen extends React.Component {
               value={data.title}
               onChangeText={title => this.setState({ title })}
             />
-            <FlatList
-              data={data.content}
-              keyExtractor={(item, index) => item + index}
-              renderItem={({ item, index }) =>
-                <View key={index} style={{ flex: 1, flexDirection: "row", alignItems: 'center', justifyContent: 'center', }}>
-                  <Icon
-                    style={{ padding: 15 }}
-                    name='check'
-                    size={Theme.SIZES.CHECKBOX_WIDTH}
-                    type='font-awesome'
-                    color={data.content[index].checked ? Theme.COLORS.SUCCESS : Theme.COLORS.MUTED}
-                    onPress={() => {
-                      data.content[index].checked = !data.content[index].checked;
-                      this.state.data.content = [...this.state.data.content];
-                      this.setState({ data: this.state.data });
-
-                    }}
-                  />
-                  <TextInput
-                    style={{ flex: 3 }}
-                    mode="outlined"
-                    theme={{ colors: { primary: "black" } }}
-                    onChangeText={(text) => {
-                      if (data.content.length - 1 == index) {
-                        data.createEmpty();
-                      }
-                      data.content[index].text = text;
-                      this.state.data.content = [...data.content];
-                      this.setState({ data });
-                    }}
-                    value={data.content[index].text}
-                    label={CONSTANTS.TEXTS.INPUT_DESCRIPTION}
-                  ></TextInput>
-                  <Icon
-                    style={{ padding: 15 }}
-                    name='close'
-                    size={Theme.SIZES.CHECKBOX_WIDTH}
-                    type='font-awesome'
-                    color={Theme.COLORS.ERROR}
-                    onPress={() => {
-                      if (data.content[index].text && data.content[index].text !== "") {
-                        data.content.splice(index, 1);
-                      } else {
-                        data.content[index].text = "";
-                      }
-                      data.content = [...data.content];
-                      this.setState({ data });
-                    }}
-                  />
-                </View>}
+            <TextInput
+              label="Plan"
+              mode="outlined"
+              theme={{ colors: { primary: "black" } }}
+              value={data.content}
+              onChangeText={content => this.setState({ data: { content } })}
+              multiline={true}
             />
+            {datePicker}
           </View>
         </KeyboardAwareScrollView>
         <List.Section>
@@ -186,8 +147,6 @@ class TodosScreen extends React.Component {
     );
   }
 }
-
-export default TodosScreen;
 
 const styles = StyleSheet.create({
   container: {

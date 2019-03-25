@@ -15,6 +15,7 @@ import CONSTANTS from "../constants";
 import { SQLite } from 'expo';
 import Todo from "../libs/models/todo.model";
 import ItemsList from "../libs/models/items-list.model";
+import Plan from "../libs/models/plan.model";
 
 const db = SQLite.openDatabase(CONSTANTS.CONFIGS.DB);
 
@@ -36,7 +37,7 @@ class HomeScreen extends React.Component {
     super(prop);
     this.state = {
       language: "",
-      itemsList: { items: [] }
+      itemsList: new ItemsList()
     };
   }
   static navigationOptions = {
@@ -48,15 +49,7 @@ class HomeScreen extends React.Component {
   }
 
   _onSearch() {
-    // db.transaction(
-    //   tx => {
-    //     tx.executeSql('select * from files', [], (_, { rows: { _array } }) => {
-    //       this.setState({ itemsList: new ItemsList(_array) });
-    //       console.log(this.state.itemsList);
-    //     }
-    //     );
-    //   }
-    // );
+
   }
 
   _onMore() {
@@ -71,18 +64,9 @@ class HomeScreen extends React.Component {
   }
 
   componentWillMount() {
-    db.transaction(
-      tx => {
-        tx.executeSql('select * from files', [], (_, { rows: { _array } }) => {
-          // console.log(_array);
-          // console.log(new ItemsList(_array));
-          // let newList = new ItemsList(_array)
-          this.setState({ itemsList: new ItemsList(_array) });
-          // console.log(this.state.itemsList);
-        }
-        );
-      }
-    );
+
+    this.state.itemsList.push(new Todo({ title: "todo today", content: [{ checked: false, text: "ah do" }], type: "todo" }));
+    this.state.itemsList.push(new Plan({ title: "plan today", content: "", type: "plan" }));
   }
 
   render() {
@@ -100,18 +84,13 @@ class HomeScreen extends React.Component {
         <CalendarPicker onDateChange={this.onDateChange} />
         <List.Section style={{ flex: 1 }}>
           {
-            this.state.itemsList.items.map((l, i) => (
+            this.state.itemsList.map((l, i) => (
               <List.Item
                 key={i}
                 theme={theme}
                 title={l.title}
                 onPress={e => { this.viewDetail(l) }}
-                left={props => < Icon
-                  name='star'
-                  size={20}
-                  type='font-awesome'
-                  color='#CDDC39'
-                />}
+                left={props => <List.Icon {...props} icon="list" />}
               />
             ))
           }
@@ -130,13 +109,15 @@ class HomeScreen extends React.Component {
   viewDetail(item) {
     item = { ...item }
     if (item.type == 'todo') {
-      item.content = JSON.parse(unescape(item.content));
-      let todo = new Todo();
-      todo.setData(item);
-      todo.setMetadata({ saved: true });
-      todo.createEmpty();
+      item = new Todo(item);
+      item.setMetadata({ saved: true });
+      item.createEmpty();
       const { navigate } = this.props.navigation;
-      navigate("Todos", todo);
+      navigate("Todos", item);
+    }
+    if (item.type == 'plan') {
+      const { navigate } = this.props.navigation;
+      navigate("Plan", item);
     }
   }
 

@@ -1,17 +1,20 @@
 import ObjectDataModel from "../core/models/object-data.model";
 
-export default class Todo extends ObjectDataModel {
+class Todo extends ObjectDataModel {
 
-  constructor(data = { title: "", content: [], type: "todo" }) {
+  static props = { title: "", content: [], type: "todo" }
+  static contentProps = { checked: false, text: "" }
+
+  constructor(data = Todo.props) {
     super(data);
-    // this.props = { checked: true, text: "" };
-    // this.data = Object.assign(this.data, data);
-    // this.metadata = Object.assign(this.metadata, metadata);
-    // this.options = Object.assign(this.options, options);
-    // this = { ...this, ...data }
+
+    this.createEmpty = () => {
+      this.content.push(Todo.contentProps);
+    }
   }
 
-  createEmpty() {
-    this.content.push({ checked: false, text: "" });
-  }
+  // createEmpty() {
+  //   this.content.push(Todo.contentProps);
+  // }
 }
+export default Todo;

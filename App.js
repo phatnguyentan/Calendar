@@ -38,19 +38,19 @@ export default class App extends React.Component {
     //     'INSERT INTO files (title, type, content) VALUES ("Test Title", "todo", "[{\"checked\": true, \"text\": \"show some thing\"}]");'
     //   );
     // });
-    db.transaction(tx => {
-      tx.executeSql(
-        'drop table files'
-      );
-      tx.executeSql(
-        'create table if not exists files (id integer primary key not null, title string, content text, type string, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);'
-      );
-      let str = [{ checked: true, text: "show some thing" }];
+    // db.transaction(tx => {
+    //   tx.executeSql(
+    //     'drop table files'
+    //   );
+    //   tx.executeSql(
+    //     'create table if not exists files (id integer primary key not null, title string, content text, type string, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);'
+    //   );
+    //   let str = [{ checked: true, text: "show some thing" }];
 
-      tx.executeSql(
-        'INSERT INTO files (title, type, content) VALUES ("Test Title", "todo", "' + escape(JSON.stringify(str)) + '");'
-      );
-    });
+    //   tx.executeSql(
+    //     'INSERT INTO files (title, type, content) VALUES ("Test Title", "todo", "' + escape(JSON.stringify(str)) + '");'
+    //   );
+    // });
   }
 
   render() {
@@ -68,7 +68,6 @@ export default class App extends React.Component {
           <View style={styles.container}>
             {Platform.OS === "ios" && <StatusBar barStyle="default" />}
             <AppNavigator />
-            {/* <GoalDetailScreen /> */}
           </View>
         </PaperProvider>
       );
