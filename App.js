@@ -4,22 +4,8 @@ import { AppLoading, Asset, Font, Icon } from "expo";
 import AppNavigator from "./navigation/AppNavigator";
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import Theme from "./assets/theme";
-import { SQLite } from 'expo';
-import CONSTANTS from "./constants";
+import TasksListScreen from "./screens/task/TasksListScreen";
 
-const db = SQLite.openDatabase(CONSTANTS.CONFIGS.DB);
-
-const theme = {
-  ...DefaultTheme,
-  roundness: 5,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: Theme.COLORS.PRIMARY,
-    accent: Theme.COLORS.ACCENT,
-    background: "white",
-    surface: "red",
-  }
-};
 
 export default class App extends React.Component {
   state = {
@@ -27,30 +13,6 @@ export default class App extends React.Component {
   };
 
   componentDidMount() {
-    // db.transaction(tx => {
-    //   tx.executeSql(
-    //     'drop table if exists files'
-    //   );
-    //   tx.executeSql(
-    //     'create table if not exists files (id integer primary key not null, title int, content text, type string, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);'
-    //   );
-    //   tx.executeSql(
-    //     'INSERT INTO files (title, type, content) VALUES ("Test Title", "todo", "[{\"checked\": true, \"text\": \"show some thing\"}]");'
-    //   );
-    // });
-    // db.transaction(tx => {
-    //   tx.executeSql(
-    //     'drop table files'
-    //   );
-    //   tx.executeSql(
-    //     'create table if not exists files (id integer primary key not null, title string, content text, type string, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);'
-    //   );
-    //   let str = [{ checked: true, text: "show some thing" }];
-
-    //   tx.executeSql(
-    //     'INSERT INTO files (title, type, content) VALUES ("Test Title", "todo", "' + escape(JSON.stringify(str)) + '");'
-    //   );
-    // });
   }
 
   render() {
@@ -67,7 +29,8 @@ export default class App extends React.Component {
         <PaperProvider theme={theme}>
           <View style={styles.container}>
             {Platform.OS === "ios" && <StatusBar barStyle="default" />}
-            <AppNavigator />
+            {/* <AppNavigator /> */}
+            <TasksListScreen />
           </View>
         </PaperProvider>
       );

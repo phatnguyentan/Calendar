@@ -19,7 +19,7 @@ import template from "./../assets/data/template";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Theme from "../assets/theme";
 import CONSTANTS from "../constants";
-import { List, TextInput, Headline, Appbar, Button } from 'react-native-paper';
+import { List, TextInput, Appbar } from 'react-native-paper';
 import { decode } from "iconv-lite";
 import Todo from "../libs/models/todo.model";
 

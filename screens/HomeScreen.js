@@ -9,21 +9,24 @@ import { WebBrowser } from "expo";
 import CalendarPicker from "react-native-calendar-picker";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { FloatingAction } from "react-native-floating-action";
-import { List, TextInput, Headline, Appbar } from 'react-native-paper';
+import { List, Appbar } from 'react-native-paper';
 import { withTheme } from 'react-native-paper';
 import CONSTANTS from "../constants";
 import { SQLite } from 'expo';
 import Todo from "../libs/models/todo.model";
 import ItemsList from "../libs/models/items-list.model";
 import Plan from "../libs/models/plan.model";
+import Theme from "../assets/theme";
 
 const db = SQLite.openDatabase(CONSTANTS.CONFIGS.DB);
 
 const actions = [
   {
     text: "Todo List",
-    icon: < Icon
-      name='list'
+    color: Theme.COLORS.PRIMARY,
+    textColor: Theme.COLORS.BLACK,
+    icon: <Icon
+      name='calendar-check-o'
       size={20}
       type='font-awesome'
     />,
@@ -65,8 +68,8 @@ class HomeScreen extends React.Component {
 
   componentWillMount() {
 
-    this.state.itemsList.push(new Todo({ title: "todo today", content: [{ checked: false, text: "ah do" }], type: "todo" }));
-    this.state.itemsList.push(new Plan({ title: "plan today", content: "", type: "plan" }));
+    this.state.itemsList.push(new Todo({ title: "todo today", content: [{ checked: false, text: "ah do" }], type: "todo", icon: "calendar-check-o" }));
+    this.state.itemsList.push(new Plan({ title: "plan today", content: "", type: "plan", icon: "file-text-o" }));
   }
 
   render() {
@@ -90,13 +93,20 @@ class HomeScreen extends React.Component {
                 theme={theme}
                 title={l.title}
                 onPress={e => { this.viewDetail(l) }}
-                left={props => <List.Icon {...props} icon="list" />}
+                left={props => <Icon
+                  name={l.icon}
+                  style={{ padding: 5 }}
+                  size={20}
+                  type='font-awesome'
+                />}
               />
             ))
           }
         </List.Section>
         <FloatingAction
           actions={actions}
+          color={Theme.COLORS.PRIMARY}
+          style={{ color: Theme.COLORS.PRIMARY }}
           onPressItem={name => { this.createNew(name) }}
         />
       </View>

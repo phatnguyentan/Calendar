@@ -6,6 +6,12 @@ export default class ObjectDataModel extends ModelBase {
     this.setData(data);
     this._metadata = metadata;
     this._options = options;
+
+    if (this.id) {
+      this.setMetadata({ saved: true });
+    } else {
+      this.setMetadata({ saved: false });
+    }
   }
 
   setData(data) {

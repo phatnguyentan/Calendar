@@ -21,6 +21,7 @@
     "react-native-calendar-picker": "^6.0.0",
     "react-native-floating-action": "^1.14.2",
     "react-native-keyboard-aware-scroll-view": "^0.8.0",
+    "react-native-material-design-styles": "^0.2.7",
     "react-native-paper": "^2.13.0",
     "react-native-vector-icons": "^6.3.0",
     "react-navigation": "^3.0.9"
